@@ -1,11 +1,11 @@
-const { createStore, createActions, createReducer } = require('./lib');
 const { takeEvery, put } = require('redux-saga/effects');
+const { createStore, createActions, createReducer } = require('./lib');
 
 const mockPeristLayer = {
   save: (state) => {
     console.log('saving', state);
   },
-  restore: () => ({})
+  restore: () => ({}),
 };
 
 const store = createStore({
@@ -24,19 +24,22 @@ const reducer = createReducer({
 });
 
 store.attachReducer({ key: 't', reducer });
-store.attachReducer({ key: 'z', reducer: createReducer({
-  [types.FOLK]: (state, d) => d,
-}) });
+store.attachReducer({
+  key: 'z',
+  reducer: createReducer({
+    [types.FOLK]: (state, d) => d,
+  }),
+});
 
 function* testOut(act) {
   yield put(actions.folk({ greeting: act.arg1 }));
 }
 
-store.attachSaga({ 
-  key: 'z', 
-  saga: function*() { 
-    yield takeEvery(types.TEST, testOut); 
-  }
+store.attachSaga({
+  key: 'z',
+  *saga() {
+    yield takeEvery(types.TEST, testOut);
+  },
 });
 
 store.dispatch(actions.test('hello'));

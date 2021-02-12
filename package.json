@@ -10,6 +10,8 @@
     "lib/*"
   ],
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepare": "npx babel src --out-dir lib"
   },
   "devDependencies": {
@@ -17,11 +19,19 @@
     "@babel/core": "^7.6.2",
     "@babel/plugin-transform-async-to-generator": "^7.12.13",
     "@babel/preset-env": "^7.6.2",
-    "babel-loader": "^8.0.6"
+    "babel-loader": "^8.0.6",
+    "eslint": "^7.6.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-teleology": "1.0.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.0.5"
   },
   "dependencies": {
     "@teleology/fp": "^1.0.6",
     "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
     "redux-saga": "^1.1.3"
   }
 }
