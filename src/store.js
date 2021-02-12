@@ -10,6 +10,8 @@ const DEFAULT_OPTIONS = {
   state: {},
 };
 
+const DEFAULT_REDUCER = (s) => s || null;
+
 export const createStore = (options = {}) => {
   const opts = {
     ...DEFAULT_OPTIONS,
@@ -25,8 +27,12 @@ export const createStore = (options = {}) => {
     opts.state = opts.persistLayer.restore();
   }
 
+  // This is due to peristance layer trying to create state - spoof reducers until they 
+  // are dynamically created
+  const spoofs = Object.assign({}, opts.state || {});
+  const spoofedReducers = Object.keys(opts.state || {}).reduce((a, k) => (a[k] = noop, a), {});
   const sagas = {};
-  const reducers = { __core: (s) => null };
+  const reducers = { ...spoofedReducers, __core: DEFAULT_REDUCER };
   const combined = (s, a) => combineReducers(reducers)(s, a);
 
   const sagaMiddleware = createSagaMiddleware();
@@ -44,6 +50,12 @@ export const createStore = (options = {}) => {
   };
 
   store.attachReducer = ({ key, reducer }) => {
+    // We have a spoofed reducer, replace it with the dynamic one
+    if (spoofs[key]) {
+      delete spoofs[key];
+      reducers[key] = reducer;
+    }
+
     if (!reducers[key]) {
       reducers[key] = reducer;
     }
