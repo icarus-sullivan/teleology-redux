@@ -994,10 +994,10 @@
   resolved "https://registry.yarnpkg.com/@redux-saga/types/-/types-1.1.0.tgz#0e81ce56b4883b4b2a3001ebe1ab298b84237204"
   integrity sha512-afmTuJrylUU/0OtqzaRkbyYFFNgCF73Bvel/sw90pvGrWIZ+vyoIJqA6eMSoA6+nb443kTmulmBtC9NerXboNg==
 
-"@teleology/fp@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@teleology/fp/-/fp-1.0.7.tgz#2a29bba14933fa1e84e5ea0a35a797662854249b"
-  integrity sha512-Cooxkibdj9A/SBVmHrpVWTTTrnIixdQT807sFbcCIcaeWBSzON9iL8YoPePBjfWsph4/gWOK5u9NwR98qdGChQ==
+"@teleology/fp@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@teleology/fp/-/fp-1.0.8.tgz#f2b000593b80c3baea97ed2cfbfca967457d6275"
+  integrity sha512-SKN0/dFH5CBC0loDBzMWBjvg+VM/097OaWsKXOBaZliEvo553/RAnih4Tf/LVya3kgk3qDYhCAS6wwVQnFlBkQ==
 
 "@types/json-schema@^7.0.5":
   version "7.0.7"
