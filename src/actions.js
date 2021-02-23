@@ -29,7 +29,6 @@ export const createActions = (map) => {
     }
 
     if (isAsyncFunction(value)) {
-      console.log('createing async');
       actions[name] = (...args) => async (dispatch) => {
         try {
           dispatch({ type, arguments: args });
