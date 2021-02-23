@@ -61,13 +61,17 @@ export const createAsyncActions = (map) => {
 
     actions[name] = (...args) => async (dispatch) => {
       try {
-        dispatch({ type, arguments: args });
+        dispatch({ type, arguments: args, loading: true });
         const res = await value(...args);
-        dispatch({ type: `${type}_SUCCESS`, result: res });
+        if (Array.isArray(res) || typeof res !== 'object') {
+          dispatch({ type: `${type}_SUCCESS`,  result: res });
+        } else {
+          dispatch({ type: `${type}_SUCCESS`, ...res });
+        }
       } catch (e) {
         dispatch({ type: `${type}_FAILED`, error: e });
       } finally {
-        dispatch({ type: `${type}_DONE` });
+        dispatch({ type: `${type}_DONE`, loading: false });
       }
     };
 
