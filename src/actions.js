@@ -28,18 +28,26 @@ export const createActions = (map) => {
       actions[name] = () => ({ type });
     }
 
-    if (isAsyncFunction(value)) {
+    if (typeof value === 'function' || isAsyncFunction(value)) {
       actions[name] = (...args) => async (dispatch) => {
         try {
           dispatch({ type, arguments: args });
           const res = await value(...args);
+          if (res.type) {
+            return dispatch(res);
+          }
           dispatch({ type: `${type}_SUCCESS`, result: res });
         } catch (e) {
           dispatch({ type: `${type}_FAILED`, error: e });
-        } finally {
-          dispatch({ type: `${type}_DONE` });
-        }
-      }
+        } 
+
+        dispatch({ type: `${type}_DONE` });
+      };
+
+      types[type] = type;
+      types[`${type}_DONE`] = `${type}_DONE`;
+      types[`${type}_SUCCESS`] = `${type}_SUCCESS`;
+      types[`${type}_FAILED`] = `${type}_FAILED`;
       continue;
     }
 
@@ -50,11 +58,6 @@ export const createActions = (map) => {
 
     if (value && typeof value === 'object' && value.constructor === Object) {
       actions[name] = (args) => ({ type, ...value, ...args });
-    }
-
-    if (typeof value === 'function') {
-      actions[name] = value;
-      continue;
     }
 
     types[type] = type;

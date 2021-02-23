@@ -23,6 +23,7 @@ const store = createStore({
 const { types, actions } = createActions({
   test: ['arg1'],
   folk: { foo: 'bar' },
+  tester: () => ({ type: 'foop' }),
   stocks: async (id) => ([
     {
       id,
@@ -71,3 +72,4 @@ store.dispatch(actions.test('hello'));
 
 console.log('actions', actions);
 actions.stocks('PRI_d')(store.dispatch);
+actions.tester()(store.dispatch);
