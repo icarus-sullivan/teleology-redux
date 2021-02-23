@@ -1,3 +1,5 @@
+const { isAsyncFunction } = require('@teleology/fp');
+
 const CAPS = /[A-Z]/g;
 const SPECIAL_CHARS_REGEX = /[^A-Z0-9_]/gi;
 
@@ -24,6 +26,22 @@ export const createActions = (map) => {
 
     if (!value) {
       actions[name] = () => ({ type });
+    }
+
+    if (isAsyncFunction(value)) {
+      console.log('createing async');
+      actions[name] = (...args) => async (dispatch) => {
+        try {
+          dispatch({ type, arguments: args });
+          const res = await value(...args);
+          dispatch({ type: `${type}_SUCCESS`, result: res });
+        } catch (e) {
+          dispatch({ type: `${type}_FAILED`, error: e });
+        } finally {
+          dispatch({ type: `${type}_DONE` });
+        }
+      }
+      continue;
     }
 
     if (Array.isArray(value)) {

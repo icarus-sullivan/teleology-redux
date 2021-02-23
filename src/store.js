@@ -1,10 +1,10 @@
 import { createStore as original, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import { createMiddlewares } from './middleware';
+import { createMiddleware } from './middleware';
 import defaultPersistLayer from './persist';
 
 const DEFAULT_OPTIONS = {
-  middlewares: [],
+  middleware: [],
   persist: true,
   devtools: false,
   state: {},
@@ -39,7 +39,7 @@ export const createStore = (options = {}) => {
   const store = original(
     combined,
     opts.state,
-    createMiddlewares(opts, sagaMiddleware, ...opts.middlewares),
+    createMiddleware(opts, sagaMiddleware, ...opts.middleware),
   );
 
   store.attachSaga = ({ key, saga }) => {

@@ -8,13 +8,38 @@ const mockPeristLayer = {
   restore: () => ({}),
 };
 
+const logger = (s) => next => action => {
+  console.log('action', action);
+  const returnVal = next(action);
+  console.log('state when action is dispatched', s.getState()); 
+  return returnVal;
+}
+
 const store = createStore({
   persistLayer: mockPeristLayer,
+  middleware: [logger],
 });
 
 const { types, actions } = createActions({
   test: ['arg1'],
   folk: { foo: 'bar' },
+  stocks: async (id) => ([
+    {
+      id,
+      price: '9000',
+      currency: '$'
+    },
+    {
+      id,
+      price: '9001',
+      currency: '$'
+    },
+    {
+      id,
+      price: '8999',
+      currency: '$'
+    }
+  ])
 });
 
 const reducer = createReducer({
@@ -43,3 +68,6 @@ store.attachSaga({
 });
 
 store.dispatch(actions.test('hello'));
+
+console.log('actions', actions);
+actions.stocks('PRI_d')(store.dispatch);
