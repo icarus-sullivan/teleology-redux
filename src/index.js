@@ -1,2 +1,7 @@
 export { createStore } from './store';
-export { createActions, createReducer } from './actions';
+export {
+  createActions,
+  createAsyncActions,
+  mergeActions,
+  createReducer
+} from './actions';

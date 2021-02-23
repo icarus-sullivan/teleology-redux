@@ -1,5 +1,11 @@
 const { takeEvery, put } = require('redux-saga/effects');
-const { createStore, createActions, createReducer } = require('./lib');
+const {
+  createStore,
+  mergeActions,
+  createActions,
+  createAsyncActions,
+  createReducer,
+} = require('./lib');
 
 const mockPeristLayer = {
   save: (state) => {
@@ -8,40 +14,45 @@ const mockPeristLayer = {
   restore: () => ({}),
 };
 
-const logger = (s) => next => action => {
+const logger = (s) => (next) => (action) => {
   console.log('action', action);
   const returnVal = next(action);
-  console.log('state when action is dispatched', s.getState()); 
+  console.log('state when action is dispatched', s.getState());
   return returnVal;
-}
+};
 
 const store = createStore({
   persistLayer: mockPeristLayer,
   middleware: [logger],
 });
 
-const { types, actions } = createActions({
+const regular = createActions({
   test: ['arg1'],
   folk: { foo: 'bar' },
   tester: () => ({ type: 'foop' }),
-  stocks: async (id) => ([
+});
+
+const asyncOnes = createAsyncActions({
+  stocks: async (id) => [
     {
       id,
       price: '9000',
-      currency: '$'
+      currency: '$',
     },
     {
       id,
       price: '9001',
-      currency: '$'
+      currency: '$',
     },
     {
       id,
       price: '8999',
-      currency: '$'
-    }
-  ])
+      currency: '$',
+    },
+  ],
 });
+
+const { types, actions } = mergeActions(regular, asyncOnes);
 
 const reducer = createReducer({
   [types.TEST]: (state, { arg1 }) => ({
@@ -72,4 +83,5 @@ store.dispatch(actions.test('hello'));
 
 console.log('actions', actions);
 actions.stocks('PRI_d')(store.dispatch);
-actions.tester()(store.dispatch);
+
+store.dispatch(actions.tester());

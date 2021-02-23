@@ -1,5 +1,3 @@
-const { isAsyncFunction } = require('@teleology/fp');
-
 const CAPS = /[A-Z]/g;
 const SPECIAL_CHARS_REGEX = /[^A-Z0-9_]/gi;
 
@@ -28,29 +26,6 @@ export const createActions = (map) => {
       actions[name] = () => ({ type });
     }
 
-    if (typeof value === 'function' || isAsyncFunction(value)) {
-      actions[name] = (...args) => async (dispatch) => {
-        try {
-          dispatch({ type, arguments: args });
-          const res = await value(...args);
-          if (res.type) {
-            return dispatch(res);
-          }
-          dispatch({ type: `${type}_SUCCESS`, result: res });
-        } catch (e) {
-          dispatch({ type: `${type}_FAILED`, error: e });
-        } 
-
-        dispatch({ type: `${type}_DONE` });
-      };
-
-      types[type] = type;
-      types[`${type}_DONE`] = `${type}_DONE`;
-      types[`${type}_SUCCESS`] = `${type}_SUCCESS`;
-      types[`${type}_FAILED`] = `${type}_FAILED`;
-      continue;
-    }
-
     if (Array.isArray(value)) {
       actions[name] = (...args) =>
         args.reduce((a, b, i) => ({ ...a, [value[i]]: b }), { type });
@@ -58,6 +33,11 @@ export const createActions = (map) => {
 
     if (value && typeof value === 'object' && value.constructor === Object) {
       actions[name] = (args) => ({ type, ...value, ...args });
+    }
+
+    if (typeof value === 'function') {
+      actions[name] = value;
+      continue;
     }
 
     types[type] = type;
@@ -68,3 +48,46 @@ export const createActions = (map) => {
     actions,
   };
 };
+
+export const createAsyncActions = (map) => {
+  const types = {};
+  const actions = {};
+  for (const [name, value] of Object.entries(map)) {
+    if (typeof value !== 'function') {
+      throw new Error('value of key-value must be async function');
+    }
+
+    const type = screamingSnake(name);
+
+    actions[name] = (...args) => async (dispatch) => {
+      try {
+        dispatch({ type, arguments: args });
+        const res = await value(...args);
+        dispatch({ type: `${type}_SUCCESS`, result: res });
+      } catch (e) {
+        dispatch({ type: `${type}_FAILED`, error: e });
+      } finally {
+        dispatch({ type: `${type}_DONE` });
+      }
+    };
+
+    types[type] = type;
+    types[`${type}_DONE`] = `${type}_DONE`;
+    types[`${type}_SUCCESS`] = `${type}_SUCCESS`;
+    types[`${type}_FAILED`] = `${type}_FAILED`;
+  }
+
+  return {
+    types,
+    actions,
+  };
+};
+
+export const mergeActions = (...actions) =>
+  actions.filter(Boolean).reduce(
+    (a, { types = {}, actions = {} }) => ({
+      types: { ...a.types, ...types },
+      actions: { ...a.actions, ...actions },
+    }),
+    { types: {}, actions: {} },
+  );

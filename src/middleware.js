@@ -3,7 +3,5 @@ import { applyMiddleware } from 'redux';
 
 export const createMiddleware = (options, ...middlewares) => {
   const applied = applyMiddleware(...middlewares);
-  return options.devtools
-    ? composeWithDevTools(applied)
-    : applied;
-}
+  return options.devtools ? composeWithDevTools(applied) : applied;
+};

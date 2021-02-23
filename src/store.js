@@ -27,10 +27,13 @@ export const createStore = (options = {}) => {
     opts.state = opts.persistLayer.restore();
   }
 
-  // This is due to peristance layer trying to create state - spoof reducers until they 
+  // This is due to peristance layer trying to create state - spoof reducers until they
   // are dynamically created
-  const spoofs = Object.assign({}, opts.state || {});
-  const spoofedReducers = Object.keys(opts.state || {}).reduce((a, k) => (a[k] = DEFAULT_REDUCER, a), {});
+  const spoofs = { ...(opts.state || {}) };
+  const spoofedReducers = Object.keys(opts.state || {}).reduce(
+    (a, k) => ((a[k] = DEFAULT_REDUCER), a),
+    {},
+  );
   const sagas = {};
   const reducers = { ...spoofedReducers, __core: DEFAULT_REDUCER };
   const combined = (s, a) => combineReducers(reducers)(s, a);
